@@ -16,6 +16,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 
@@ -39,12 +40,12 @@ public class Phototheque extends JFrame{
 	public Phototheque() {
 		super("Phototheque");
 		
-		this.setPreferredSize(new Dimension(600,400));
+		this.setPreferredSize(new Dimension(800,600));
 		this.setJMenuBar(createMyMenuBar());
 		this.getContentPane().setLayout(new BorderLayout());
 		
 		this.add(getStatusBar(),BorderLayout.PAGE_END);
-		this.add(getToolBar(),BorderLayout.WEST);
+		this.add(getToolBar(),BorderLayout.NORTH);
 		this.add(getMainPanel(), BorderLayout.CENTER);
 	}
 	
@@ -129,10 +130,10 @@ public class Phototheque extends JFrame{
 	
 	private JPanel getToolBar() {
 		JPanel toolBar = new JPanel();
-		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.PAGE_AXIS));
+		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.LINE_AXIS));
 		//Not working in BorderLayout
 		//toolBar.setMaximumSize(new Dimension(10,Integer.MAX_VALUE));
-		toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
+		toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 		
 		
 		JToggleButton familyToggle = new JToggleButton("Family");
@@ -169,11 +170,10 @@ public class Phototheque extends JFrame{
 		return toolBar ;
 	}
 	
-	private JPanel getMainPanel() {
-		JPanel mainPanel = new JPanel();
+	private JScrollPane getMainPanel() {
+		JScrollPane scrollPane = new JScrollPane(new PhotoComponent());
 		
-		
-		return mainPanel ;
+		return scrollPane ;
 	}
 	
 	private JLabel getStatusBar() {
