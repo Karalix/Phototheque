@@ -172,7 +172,6 @@ public class Phototheque extends JFrame{
 	
 	private JScrollPane getMainPanel() {
 		JScrollPane scrollPane = new JScrollPane(new PhotoComponent());
-		
 		return scrollPane ;
 	}
 	

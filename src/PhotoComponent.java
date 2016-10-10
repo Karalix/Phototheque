@@ -1,6 +1,11 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,12 +13,21 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
+import model.Photo;
+import scenegraph.ContainerNode;
+import scenegraph.PathNode;
+
 
 public class PhotoComponent extends JComponent {
 	
+	protected Photo currentPhoto;
 	protected BufferedImage currentImage ;
 	protected String imagePath ;
 	protected boolean isFlipped;
+	
+	private MouseAdapter mouseAdapter;
+	private boolean isDrawing = false;
+	private int strokeNumber;
 	
 	public PhotoComponent() {
 		super();
@@ -21,18 +35,72 @@ public class PhotoComponent extends JComponent {
 		defaultHeigth = defaultWidth = 50 ;
 		this.setSize(defaultWidth,defaultHeigth);
 		this.setPreferredSize(this.getSize());
+		
+		//DEBUG
+		currentPhoto = new Photo("./img.png", new ContainerNode(Color.BLACK, null));
+
+
+	    try {
+			currentImage = ImageIO.read(new File(currentPhoto.getPhotoPath()));
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	
 
 	@Override
-	protected void paintComponent(Graphics graphics) {
+	protected void paintComponent(final Graphics graphics) {
+		if(mouseAdapter == null) {
+			mouseAdapter = new MouseAdapter() {
+				
+				@Override
+				public void mouseClicked(MouseEvent event) {
+					if(event.getClickCount() == 2) {
+						isFlipped = !isFlipped ;
+					}
+				}
+				
+				@Override
+				public void mouseDragged(MouseEvent event) {
+					if(isFlipped) {
+						//Creation of a new stroke
+						if(!isDrawing) {
+							//strokeNumber is kept to enable fast retrieving when we want to add a new point
+							strokeNumber = currentPhoto.getSceneGraph().addChild(new PathNode(event.getX(), event.getY(),Color.BLACK, new AffineTransform()));
+							isDrawing = true ;
+						}
+						//Addition of a new point to the stroke
+						((PathNode)(currentPhoto.getSceneGraph().getChild(strokeNumber))).addPoint(event.getX(), event.getY());
+						//System.out.println(event.getX()+":"+event.getY());
+					}
+					super.mouseDragged(event);
+				}
+				
+				@Override
+				public void mouseReleased(MouseEvent arg0) {
+					//once click released, the next time we drag we create a new stroke
+					isDrawing = false ;
+					super.mouseReleased(arg0);
+				}
+				
+			};
+			
+
+			this.addMouseListener(mouseAdapter);
+			this.addMouseMotionListener(mouseAdapter);
+		}
+		
 		
 		Color oldColor = graphics.getColor();
 		
 		//Painting a neat background
 		graphics.setColor(new Color(250, 250,255));
-		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
+		graphics.fillRect(0, 0, this.getParent().getWidth(), this.getParent().getHeight());
 		//Paint lines
 		graphics.setColor(new Color(220,220,255));
 		
@@ -43,14 +111,12 @@ public class PhotoComponent extends JComponent {
 			graphics.drawLine(i*15, 0, i*15, this.getParent().getHeight());
 		}
 		
-		//Trying to show the image
-		try {
+		if(currentImage != null){
 			int width, height ;
-		    currentImage = ImageIO.read(new File("./img.png"));
 		    width = currentImage.getWidth();
 		    height = currentImage.getHeight();
 		    
-
+	
 		    this.setSize(width, height);
 		    this.setPreferredSize(new Dimension(width, height));
 		    
@@ -61,16 +127,25 @@ public class PhotoComponent extends JComponent {
 		    //If the image is bigger than the parent component, then we don't want to center the image
 		    xOrigin = width > this.getParent().getWidth() ? 0 : xOrigin ;
 		    yOrigin = height > this.getParent().getHeight() ? 0 : yOrigin ;
-
-			graphics.drawImage(currentImage, xOrigin, yOrigin, null);
-			
-		    this.revalidate();
 		    
+		    //TEMPORARY
+		    xOrigin = 0 ;
+		    yOrigin= 0 ;
 			
-		} catch (IOException e) {
-			System.err.println(e);
+			if(!isFlipped){
+				//Trying to show the image
+				graphics.drawImage(currentImage, xOrigin, yOrigin, null);
+			}
+			else {
+				graphics.setColor(new Color(255,250,220));
+				graphics.fillRect(xOrigin, yOrigin, width, height);
+				currentPhoto.getSceneGraph().paintNode((Graphics2D)graphics);
+	
+			}
 		}
-		
+
+	    this.revalidate();
+	    
 		graphics.setColor(oldColor);
 		super.paintComponent(graphics);
 	}
