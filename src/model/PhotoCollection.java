@@ -21,12 +21,13 @@ public class PhotoCollection {
 		return instance;
 	}
 	
-	public void addPhoto(Photo newPhoto) {
+	public int addPhoto(Photo newPhoto) {
 		collection.add(newPhoto);
+		return collection.size()-1;
 	}
 	
 	public Photo getPhoto(int index) {
-		if(collection.size()-1 > index) {
+		if(collection.size()-1 < index) {
 			System.err.println("Stop doing shit : the index is to large ");
 			return null;
 		}

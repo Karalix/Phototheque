@@ -80,8 +80,8 @@ public class Phototheque extends JFrame{
 				int returnVal = fc.showOpenDialog(Phototheque.this);
 				
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-		            PhotoCollection.getInstance().addPhoto(new Photo(fc.getSelectedFile().getAbsolutePath()));
-		            photoComponent.showPhoto(PhotoCollection.getInstance().getPhoto(0));
+		            int newIndex = PhotoCollection.getInstance().addPhoto(new Photo(fc.getSelectedFile().getAbsolutePath()));
+		            photoComponent.showPhoto(PhotoCollection.getInstance().getPhoto(newIndex));
 		            changeStatus(fc.getSelectedFile().getAbsolutePath()+" : loaded");
 		        }
 				
