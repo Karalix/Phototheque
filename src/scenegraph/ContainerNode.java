@@ -66,7 +66,7 @@ public class ContainerNode extends Node {
 	}
 
 	@Override
-	public void paintNode(Graphics2D graphics) {
+	public void paintSpecializedNode(Graphics2D graphics) {
 		for(Node child : children) {
 			child.paintNode(graphics);
 		}

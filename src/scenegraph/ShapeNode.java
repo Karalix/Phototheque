@@ -21,7 +21,7 @@ public class ShapeNode extends Node {
 	}
 
 	@Override
-	public void paintNode(Graphics2D graphics) {
+	protected void paintSpecializedNode(Graphics2D graphics) {
 		graphics.draw(shape);
 		
 	}

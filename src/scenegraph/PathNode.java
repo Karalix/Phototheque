@@ -31,7 +31,7 @@ public class PathNode extends Node {
 	}
 
 	@Override
-	public void paintNode(Graphics2D graphics) {
+	protected void paintSpecializedNode(Graphics2D graphics) {
 		graphics.setPaint(contextColor);
 		graphics.setStroke(new BasicStroke(2));
 		//Antialiasing on

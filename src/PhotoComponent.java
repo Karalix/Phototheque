@@ -75,9 +75,7 @@ public class PhotoComponent extends JComponent {
 							isDrawing = true ;
 						}
 						//Addition of a new point to the stroke
-						if(event.getX()<=currentImage.getWidth() && event.getY()<=currentImage.getHeight()){
-							((PathNode)(currentPhoto.getSceneGraph().getChild(strokeNumber))).addPoint(event.getX(), event.getY());
-						}
+						((PathNode)(currentPhoto.getSceneGraph().getChild(strokeNumber))).addPoint(event.getX(), event.getY());
 						//System.out.println(event.getX()+":"+event.getY());
 					}
 					super.mouseDragged(event);
@@ -96,7 +94,6 @@ public class PhotoComponent extends JComponent {
 			this.addMouseListener(mouseAdapter);
 			this.addMouseMotionListener(mouseAdapter);
 		}
-		
 		
 		Color oldColor = graphics.getColor();
 		
@@ -134,6 +131,8 @@ public class PhotoComponent extends JComponent {
 		    xOrigin = 0 ;
 		    yOrigin= 0 ;
 			
+		    graphics.setClip(xOrigin, yOrigin, xOrigin+width, yOrigin+height);
+		    
 			if(!isFlipped){
 				//Trying to show the image
 				graphics.drawImage(currentImage, xOrigin, yOrigin, null);

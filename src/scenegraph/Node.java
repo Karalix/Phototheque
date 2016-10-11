@@ -19,7 +19,14 @@ public abstract class Node {
 		this.contexteTransform = transform;
 	}
 	
-	public abstract void paintNode(Graphics2D graphics);
+	public final void paintNode(Graphics2D graphics) {
+		Color oldColor = graphics.getColor();
+		graphics.setColor(contextColor);
+		paintSpecializedNode(graphics);
+		graphics.setColor(oldColor);
+	}
+	
+	protected abstract void paintSpecializedNode(Graphics2D graphics);
 	
 	public Node getParent() {
 		return parent;
