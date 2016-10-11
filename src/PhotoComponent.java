@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -16,6 +18,7 @@ import javax.swing.JComponent;
 import model.Photo;
 import scenegraph.ContainerNode;
 import scenegraph.PathNode;
+import scenegraph.TextNode;
 
 
 public class PhotoComponent extends JComponent {
@@ -26,8 +29,10 @@ public class PhotoComponent extends JComponent {
 	protected boolean isFlipped;
 	
 	private MouseAdapter mouseAdapter;
+	private KeyAdapter keyAdapter;
 	private boolean isDrawing = false;
-	private int strokeNumber;
+	private boolean isWriting = false;
+	private int nodeNumber;
 	
 	public PhotoComponent() {
 		super();
@@ -60,7 +65,13 @@ public class PhotoComponent extends JComponent {
 				
 				@Override
 				public void mouseClicked(MouseEvent event) {
+					if(event.getClickCount() == 1 && isFlipped) {
+						PhotoComponent.this.requestFocus();
+						isWriting = true ;
+						nodeNumber = currentPhoto.getSceneGraph().addChild(new TextNode(event.getX(), event.getY(), Color.BLACK, null));
+					}
 					if(event.getClickCount() == 2) {
+						isWriting = false;
 						isFlipped = !isFlipped ;
 					}
 				}
@@ -68,14 +79,15 @@ public class PhotoComponent extends JComponent {
 				@Override
 				public void mouseDragged(MouseEvent event) {
 					if(isFlipped) {
+						isWriting = false ;
 						//Creation of a new stroke
 						if(!isDrawing) {
 							//strokeNumber is kept to enable fast retrieving when we want to add a new point
-							strokeNumber = currentPhoto.getSceneGraph().addChild(new PathNode(event.getX(), event.getY(),Color.BLACK, new AffineTransform()));
+							nodeNumber = currentPhoto.getSceneGraph().addChild(new PathNode(event.getX(), event.getY(),Color.BLACK, new AffineTransform()));
 							isDrawing = true ;
 						}
 						//Addition of a new point to the stroke
-						((PathNode)(currentPhoto.getSceneGraph().getChild(strokeNumber))).addPoint(event.getX(), event.getY());
+						((PathNode)(currentPhoto.getSceneGraph().getChild(nodeNumber))).addPoint(event.getX(), event.getY());
 						//System.out.println(event.getX()+":"+event.getY());
 					}
 					super.mouseDragged(event);
@@ -93,6 +105,19 @@ public class PhotoComponent extends JComponent {
 
 			this.addMouseListener(mouseAdapter);
 			this.addMouseMotionListener(mouseAdapter);
+		}
+		
+		if(keyAdapter == null) {
+			keyAdapter = new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if(isWriting) {
+						((TextNode)currentPhoto.getSceneGraph().getChild(nodeNumber)).addChar(String.valueOf(e.getKeyChar()));
+					}
+					super.keyPressed(e);
+				}
+			};
+			this.addKeyListener(keyAdapter);
 		}
 		
 		Color oldColor = graphics.getColor();
