@@ -1,5 +1,7 @@
 package model;
 
+import java.awt.Color;
+
 import scenegraph.ContainerNode;
 
 public class Photo {
@@ -7,10 +9,10 @@ public class Photo {
 	protected ContainerNode sceneGraph;
 	
 	
-	public Photo(String photoPath, ContainerNode sceneGraph) {
+	public Photo(String photoPath) {
 		super();
 		this.photoPath = photoPath;
-		this.sceneGraph = sceneGraph;
+		this.sceneGraph = new ContainerNode(Color.BLACK, null);
 	}
 	public String getPhotoPath() {
 		return photoPath;

@@ -7,6 +7,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
@@ -19,10 +20,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import model.Photo;
+import model.PhotoCollection;
 
 
 public class Phototheque extends JFrame{
 	private JLabel status = null ;
+	private PhotoComponent photoComponent = null ;
 	
 	public static void main(String args[]) {
 		try 
@@ -43,6 +51,7 @@ public class Phototheque extends JFrame{
 		this.setPreferredSize(new Dimension(800,600));
 		this.setJMenuBar(createMyMenuBar());
 		this.getContentPane().setLayout(new BorderLayout());
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		this.add(getStatusBar(),BorderLayout.PAGE_END);
 		this.add(getToolBar(),BorderLayout.NORTH);
@@ -57,13 +66,24 @@ public class Phototheque extends JFrame{
 		JMenuItem menuItemImport = new JMenuItem("Import");
 		JMenuItem menuItemDelete = new JMenuItem("Delete");
 		JMenuItem menuItemQuit = new JMenuItem("Quit");
+		
 		menuItemImport.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fc = new JFileChooser();
+				FileFilter imageFilter = new FileNameExtensionFilter(
+					    "Image files", ImageIO.getReaderFileSuffixes());
+				fc.addChoosableFileFilter(imageFilter);
+				fc.setAcceptAllFileFilterUsed(false);
 				
 				int returnVal = fc.showOpenDialog(Phototheque.this);
+				
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            PhotoCollection.getInstance().addPhoto(new Photo(fc.getSelectedFile().getAbsolutePath()));
+		            photoComponent.showPhoto(PhotoCollection.getInstance().getPhoto(0));
+		            changeStatus(fc.getSelectedFile().getAbsolutePath()+" : loaded");
+		        }
 				
 			}
 		});
@@ -71,7 +91,8 @@ public class Phototheque extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeStatus("Clicked Delete");
+				photoComponent.showPhoto(null);
+				changeStatus("Photo cleared");
 				
 			}
 		});
@@ -171,7 +192,8 @@ public class Phototheque extends JFrame{
 	}
 	
 	private JScrollPane getMainPanel() {
-		JScrollPane scrollPane = new JScrollPane(new PhotoComponent());
+		photoComponent = new PhotoComponent();
+		JScrollPane scrollPane = new JScrollPane(photoComponent);
 		return scrollPane ;
 	}
 	

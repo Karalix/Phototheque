@@ -33,6 +33,13 @@ public class TextNode extends Node {
 		text.append(newChar);
 	}
 	
+
+	public void backSpace() {
+		if (text.length() > 0) {
+		   text.setLength(text.length() - 1);
+		}
+	}
+	
 	@Override
 	protected void paintSpecializedNode(Graphics2D graphics) {
 		Rectangle bounds = graphics.getClipBounds();
@@ -77,7 +84,6 @@ public class TextNode extends Node {
 							charsLeftToWrite.insert(0,wordToDraw.charAt(wordToDraw.length()-1));
 							wordToDraw = wordToDraw.substring(0, wordToDraw.length()-1);
 						}
-						//Now that all computation is done we add a space to wordToDraw, don't care if there is not enough place to draw it, Thug life
 						wordToDraw += " ";
 						//We draw what we can of wordToDraw
 						graphics.drawString(wordToDraw, wordDrawXOrigin, wordDrawYOrigin);
@@ -93,7 +99,7 @@ public class TextNode extends Node {
 						continue;
 					}
 				}
-				//Now that all computation is done we add a space to wordToDraw, don't care if there is not enough place to draw it, Thug life
+				//Now that all computation is done we add a space to wordToDraw
 				wordToDraw += " ";
 				//Draw the wordToDraw normally
 				graphics.drawString(wordToDraw, wordDrawXOrigin, wordDrawYOrigin);
@@ -107,5 +113,6 @@ public class TextNode extends Node {
 		}
 
 	}
+
 
 }

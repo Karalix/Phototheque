@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import model.Photo;
-import scenegraph.ContainerNode;
 import scenegraph.PathNode;
 import scenegraph.TextNode;
 
@@ -40,22 +38,26 @@ public class PhotoComponent extends JComponent {
 		defaultHeigth = defaultWidth = 50 ;
 		this.setSize(defaultWidth,defaultHeigth);
 		this.setPreferredSize(this.getSize());
-		
-		//DEBUG
-		currentPhoto = new Photo("./img.png", new ContainerNode(Color.BLACK, null));
-
-
-	    try {
-			currentImage = ImageIO.read(new File(currentPhoto.getPhotoPath()));
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		this.setFocusable(true);
 		
 	}
 	
+	public void showPhoto(Photo photo){
+		currentPhoto = photo ;
+		if(photo != null){
+		    try {
+				currentImage = ImageIO.read(new File(currentPhoto.getPhotoPath()));
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			currentImage = null;
+		}
+	    revalidate();
+	    repaint();
+	}
 	
 
 	@Override
@@ -73,6 +75,8 @@ public class PhotoComponent extends JComponent {
 					if(event.getClickCount() == 2) {
 						isWriting = false;
 						isFlipped = !isFlipped ;
+						PhotoComponent.this.revalidate();
+						PhotoComponent.this.repaint();
 					}
 				}
 				
@@ -88,6 +92,9 @@ public class PhotoComponent extends JComponent {
 						}
 						//Addition of a new point to the stroke
 						((PathNode)(currentPhoto.getSceneGraph().getChild(nodeNumber))).addPoint(event.getX(), event.getY());
+
+						PhotoComponent.this.revalidate();
+						PhotoComponent.this.repaint();
 						//System.out.println(event.getX()+":"+event.getY());
 					}
 					super.mouseDragged(event);
@@ -111,8 +118,20 @@ public class PhotoComponent extends JComponent {
 			keyAdapter = new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
-					if(isWriting) {
+					if(isWriting && e.getKeyChar() != '\b') {
 						((TextNode)currentPhoto.getSceneGraph().getChild(nodeNumber)).addChar(String.valueOf(e.getKeyChar()));
+						PhotoComponent.this.revalidate();
+						PhotoComponent.this.repaint();
+					}
+					super.keyPressed(e);
+				}
+				
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+						((TextNode)currentPhoto.getSceneGraph().getChild(nodeNumber)).backSpace();
+						PhotoComponent.this.revalidate();
+						PhotoComponent.this.repaint();
 					}
 					super.keyPressed(e);
 				}
