@@ -75,7 +75,9 @@ public class PhotoComponent extends JComponent {
 							isDrawing = true ;
 						}
 						//Addition of a new point to the stroke
-						((PathNode)(currentPhoto.getSceneGraph().getChild(strokeNumber))).addPoint(event.getX(), event.getY());
+						if(event.getX()<=currentImage.getWidth() && event.getY()<=currentImage.getHeight()){
+							((PathNode)(currentPhoto.getSceneGraph().getChild(strokeNumber))).addPoint(event.getX(), event.getY());
+						}
 						//System.out.println(event.getX()+":"+event.getY());
 					}
 					super.mouseDragged(event);
