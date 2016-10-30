@@ -62,6 +62,8 @@ public class PhotoComponent extends JComponent {
 
 	@Override
 	protected void paintComponent(final Graphics graphics) {
+		
+		
 		if(mouseAdapter == null) {
 			mouseAdapter = new MouseAdapter() {
 				

@@ -152,8 +152,6 @@ public class Phototheque extends JFrame{
 	private JPanel getToolBar() {
 		JPanel toolBar = new JPanel();
 		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.LINE_AXIS));
-		//Not working in BorderLayout
-		//toolBar.setMaximumSize(new Dimension(10,Integer.MAX_VALUE));
 		toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 		
 		
